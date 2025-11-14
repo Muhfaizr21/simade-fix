@@ -9,7 +9,7 @@
                         <img src="admin/assets/images/auth/logo.png" width="180" alt="Logo">
                     </a>
                 </div>
-                
+
                 @if (session()->has('password-success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('password-success') }}
