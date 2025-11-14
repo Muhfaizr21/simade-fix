@@ -1,38 +1,68 @@
 @extends('layouts.main')
 
 @section('content')
-    <section class="counts section-bg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 mx-auto">
-                    <div class="row">
-                        <div class="col-md-12 mb-5">
-                            <div class="card p-3">
-                                <div class="card-body">
-                                    <p><a href="/pengumuman">Pengumuman</a> >> <a
-                                            href="{{ $pengumuman->slug }}">{{ $pengumuman->judul }}</a></p>
 
-                                    <h1 class="mb-3">{{ $pengumuman->judul }}</h1>
+<section class="py-5" style="background:#f3f4f6;">
+    <div class="container">
 
-                                    <div class="news-date mb-4">
-                                        <span class="mr-3"> <i class="bi bi-stopwatch-fill"></i>
-                                            {{ $pengumuman->created_at->diffForHumans() }}</span> |
-                                        <span class="mr-3"><i class="bi bi-person-circle">
-                                                {{ $pengumuman->user->name }}</i></span> |
-                                        <span><i class="bi bi-fire">Dibaca {{ $pengumuman->views }} Kali</i></span>
-                                    </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
 
-                                    <p>{!! $pengumuman->isi_pengumuman !!}</p>
+                {{-- CARD WRAPPER --}}
+                <div class="card border-0 shadow-sm rounded-4">
 
-                                </div>
-                            </div>
+                    <div class="card-body p-4 p-md-5">
+
+                        {{-- Breadcrumb --}}
+                        <div class="mb-4">
+                            <small class="text-muted">
+                                <a href="/pengumuman" class="text-decoration-none" style="color:#4f46e5;">
+                                    Pengumuman
+                                </a>
+                                <span class="mx-1">/</span>
+                                <span>{{ $pengumuman->judul }}</span>
+                            </small>
                         </div>
 
+                        {{-- TITLE --}}
+                        <h1 class="fw-bold mb-3" style="color:#1f2937; font-size:2rem;">
+                            {{ $pengumuman->judul }}
+                        </h1>
+
+                        {{-- Meta --}}
+                        <div class="d-flex flex-wrap mb-4" style="color:#6b7280; font-size: .9rem;">
+
+                            <div class="me-3 mb-2">
+                                <i class="bi bi-clock"></i>
+                                {{ $pengumuman->created_at->diffForHumans() }}
+                            </div>
+
+                            <div class="me-3 mb-2">
+                                <i class="bi bi-person-circle"></i>
+                                {{ $pengumuman->user->name }}
+                            </div>
+
+                            <div class="mb-2">
+                                <i class="bi bi-eye"></i>
+                                Dibaca {{ $pengumuman->views }} kali
+                            </div>
+
+                        </div>
+
+                        <hr class="my-4">
+
+                        {{-- CONTENT --}}
+                        <div class="article-body" style="color:#374151; font-size:1.08rem; line-height:1.8;">
+                            {!! $pengumuman->isi_pengumuman !!}
+                        </div>
 
                     </div>
                 </div>
 
             </div>
         </div>
-    </section>
+
+    </div>
+</section>
+
 @endsection
