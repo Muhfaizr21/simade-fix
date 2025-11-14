@@ -155,8 +155,8 @@ Route::resource('/admin/pengumuman', AdminAnnouncementController::class);
 Route::get('/admin/apbdes', [AdminAnggaranController::class, 'slug']);
 Route::resource('/admin/apbdes', AdminAnggaranController::class);
 
-Route::get('/chatbot', function () {
-    return response()->json(['message' => 'Chatbot SIMADE aktif 👋']);
-});
 Route::post('/chatbot/ask', [ChatBotController::class, 'ask'])->name('chatbot.ask');
+
+// Jika Anda ingin route landing page untuk testing
+Route::get('/chatbot', [ChatBotController::class, 'index']);
 

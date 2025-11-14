@@ -3,83 +3,115 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client as GuzzleClient;
 
 class ChatBotController extends Controller
 {
-    // Untuk jaga-jaga jika ada route ke /chatbot
+    // Model Gemini yang digunakan
+    protected const GEMINI_MODEL = 'gemini-2.5-flash';
+    protected $geminiApiKey;
+
+    public function __construct()
+    {
+        $this->geminiApiKey = env('GEMINI_API_KEY');
+        if (empty($this->geminiApiKey)) {
+            Log::error("GEMINI_API_KEY tidak ditemukan di .env. Chatbot akan dinonaktifkan.");
+        }
+    }
+
     public function index()
     {
         return response()->json(['message' => 'Chatbot SIMADE aktif 👋']);
     }
 
+    /**
+     * Logika utama untuk menerima dan memproses pertanyaan, HANYA menggunakan Gemini.
+     */
     public function ask(Request $request)
     {
-        $question = strtolower(trim($request->input('question')));
+        $request->validate(['question' => 'required|string']);
+        $answer = '';
 
-        // --- Daftar respons ---
-        $responses = [
-            // 👋 Sapaan umum
-            'halo' => 'Halo! 👋 Ada yang bisa saya bantu tentang Desa Dongkal?',
-            'hai' => 'Hai juga! Apa yang ingin kamu ketahui tentang desa ini?',
-            'hi' => 'Hai juga! Apa yang ingin kamu ketahui tentang desa ini?',
-            'assalamualaikum' => 'Waalaikumsalam! Semoga harimu menyenangkan 🌿',
-            'selamat pagi' => 'Selamat pagi! Semoga hari kamu penuh semangat ☀️',
-            'selamat malam' => 'Selamat malam 🌙, semoga harimu menyenangkan!',
+        // -------------------------------------------------------------
+        // 1. DATA DATABASE (Konteks Detail untuk Gemini)
+        //    *Data ini diambil dari simade.sql dan di-hardcode di sini.
+        // -------------------------------------------------------------
+        $databaseContext = "DATA LENGKAP DESA DONGKAL (Sumber Database SIMADE):\n";
+        $databaseContext .= "--------------------------------------------------------\n";
 
-            // 🏡 Tentang Desa
-            'visi' => 'Visi Desa Dongkal adalah menjadi desa yang mandiri, maju, dan sejahtera berbasis gotong royong.',
-            'misi' => 'Misi Desa Dongkal mencakup peningkatan pelayanan publik, pembangunan berkelanjutan, dan pemberdayaan masyarakat.',
-            'sejarah' => 'Desa Dongkal berdiri sejak masa pemerintahan kolonial Belanda dan terus berkembang hingga kini dengan masyarakat yang harmonis.',
-            'wilayah' => 'Desa Dongkal terletak di Kecamatan Dongkal, Kabupaten Indramayu. Luas wilayah sekitar ... hektar.',
-            'perangkat' => 'Perangkat desa terdiri dari Kepala Desa, Sekretaris Desa, Kasi Pemerintahan, Kasi Kesejahteraan, dan lainnya.',
-            'peta' => 'Kamu bisa melihat peta lengkap desa di halaman /peta-desa 🌍',
-            'data' => 'Data Desa Dongkal mencakup jumlah penduduk, pekerjaan, dan pendidikan — bisa dilihat di halaman /data-desa.',
+        // Data Pemerintahan & Kontak
+        $databaseContext .= "1. PEMERINTAHAN & KONTAK:\n";
+        $databaseContext .= "- Kepala Desa: Haya.\n"; // Diambil dari perangkat_desas
+        $databaseContext .= "- Sekretaris Desa: Hardi.\n"; // Diambil dari perangkat_desas
+        $databaseContext .= "- Kontak Email: kelompok3@gmail.com.\n"; // Diambil dari kontaks
+        $databaseContext .= "- Kontak HP: 0882260686031.\n"; // Diambil dari kontaks
 
-            // 📢 Informasi
-            'berita' => 'Berita terbaru tentang Desa Dongkal dapat kamu baca di halaman /berita.',
-            'pengumuman' => 'Pengumuman resmi desa tersedia di halaman /pengumuman.',
-            'gallery' => 'Kamu bisa lihat dokumentasi kegiatan desa di /gallery.',
-            'apbdesa' => 'Informasi APBDesa bisa kamu lihat di /apbdesa.',
+        // Data Demografi
+        $databaseContext .= "2. DEMOGRAFI DESA:\n";
+        $databaseContext .= "- Total Penduduk: 17368 jiwa (Laki-laki: 8902, Perempuan: 8466).\n"; // Diambil dari jenis_kelamins
+        $databaseContext .= "- Mayoritas Pekerjaan: Petani (13026 jiwa).\n"; // Diambil dari pekerjaans
+        $databaseContext .= "- Mayoritas Agama: Islam (9594 penganut).\n"; // Diambil dari agamas
 
-            // 💼 Layanan & UMKM
-            'umkm' => 'Desa Dongkal mendukung UMKM lokal. Lihat di halaman /umkm untuk tahu lebih banyak!',
-            'layanan' => 'Ada banyak layanan online desa seperti surat pengantar dan KK. Cek di aplikasi mobile ya!! ',
-            'kontak' => 'Untuk menghubungi perangkat desa, buka halaman /kontak.',
-            'bagaimana cara mengajukan?' => 'Kamu bisa mengajukan permohonan surat melalui layanan mobile atau langsung ke kantor desa.',
+        // Visi Misi
+        $databaseContext .= "3. VISI & MISI:\n";
+        $databaseContext .= "- Visi: Terwujudnya Desa Dongkal yang maju, mandiri, dan berbudaya, dengan masyarakat sejahtera dan lingkungan yang lestari.\n"; // Diambil dari visi_misis
+        $databaseContext .= "- Misi: Meningkatkan kualitas pendidikan, kesehatan, dan kesejahteraan; Mengembangkan potensi ekonomi lokal; Melestarikan budaya; Meningkatkan partisipasi masyarakat; Mewujudkan tata kelola pemerintahan yang transparan.\n"; // Diambil dari visi_misis
 
-            // 🤔 Pertanyaan umum / liar
-            'siapa kades' => 'Kepala Desa Dongkal saat ini dijabat oleh Bapak Faiz.',
-            'desa ini pernah banjir gak' => 'Beberapa tahun lalu pernah terjadi banjir ringan, tapi sekarang sistem drainase sudah lebih baik 💧',
-            'ada wifi' => 'Beberapa titik publik menyediakan WiFi desa gratis, terutama di balai desa dan area sekitar.',
-            'penduduk ramah' => 'Banget! Masyarakat Dongkal dikenal dengan keramahan dan gotong royongnya 🤝',
-            'event' => 'Biasanya setiap tahun ada acara bersih desa dan festival budaya lokal 🎉',
-            'cafe' => 'Ada beberapa warung kopi lokal yang sering jadi tempat nongkrong anak muda desa ☕',
-            'sekolah' => 'Tentu, di Desa Dongkal terdapat SD dan juga SMP di sekitar wilayah desa.',
-            'terkenal' => 'Desa Dongkal terkenal dengan semangat gotong royong dan hasil pertaniannya yang melimpah 🌾',
-            'kapan berdiri' => 'Desa Dongkal berdiri sejak sekitar tahun 1800-an, dan resmi secara administratif setelah kemerdekaan Indonesia.',
+        // Informasi & Layanan
+        $databaseContext .= "4. INFORMASI TERKINI & LAYANAN:\n";
+        $databaseContext .= "- Pengumuman Penting: Penyaluran Bantuan Langsung Tunai (BLT) Dana Desa Bulan November 2025, Pelaksanaan Gotong Royong Bersih-Bersih Lingkungan Desa Dongkal.\n"; // Diambil dari announcements
+        $databaseContext .= "- Berita Utama: Pengembangan Wisata Pertanian dan Edukasi, Gotong Royong Massal Bersihkan Lingkungan Menjelang Musim Hujan.\n"; // Diambil dari beritas
+        $databaseContext .= "- Layanan Online: Pembuatan Surat Keterangan Domisili Secara Online, Pendaftaran Layanan Kesehatan di Puskesmas Anjatan Secara Online.\n"; // Diambil dari layanans
+        $databaseContext .= "- Produk UMKM: Kerajinan Rajut Eceng Gondok, Dorokdokcu (sejenis kerupuk kulit sapi).\n"; // Diambil dari umkms
+        $databaseContext .= "--------------------------------------------------------\n\n";
 
-            // 🧠 Meta / Chatbot awareness
-            'kamu siapa' => 'Aku asisten virtual Desa Dongkal 🤖, siap bantu kamu 24 jam!',
-            'bisa apa' => 'Aku bisa bantu kasih info tentang desa, layanan, berita, atau sekadar ngobrol ringan 😉',
-            'terima kasih' => 'Sama-sama! Senang bisa bantu kamu 🙌',
-            'sip' => 'You\'re welcome! Glad to assist you 🙌',
-        ];
 
-        // --- Matching logika lebih cerdas ---
-        $answer = collect($responses)->first(function ($value, $key) use ($question) {
-            // match jika kata kunci ada di pertanyaan user
-            return str_contains($question, $key);
-        });
+        $systemInstruction = "Anda adalah Asisten Virtual bernama Simade dari Desa Dongkal, Indramayu.
+        Tugas Anda adalah menjawab pertanyaan user dengan ramah dan informatif, utamakan menggunakan data yang telah disediakan di bawah ini.
+        Jika pertanyaan tentang data demografi (penduduk, agama, pekerjaan), visi, misi, kades, layanan, atau berita, JAWAB WAJIB menggunakan data di bawah.
+        Jika pertanyaan tidak relevan dengan data atau topik umum, berikan jawaban sopan dan alihkan kembali ke topik desa.
 
-        if (!$answer) {
-            // fallback random biar terasa alami
-            $fallbacks = [
-                "Hmm... aku belum punya jawaban untuk itu 😅. Coba tanya hal lain tentang Desa Dongkal!",
-                "Menarik juga pertanyaannya, tapi aku belum tahu jawabannya 🤔.",
-                "Aku belum punya data soal itu, tapi bisa kamu tanyakan langsung ke kantor desa 💬.",
-                "Hi aku Simade Virtual yang dikembangkan oleh Kelompok 3, silakan ajukan pertanyaan terkait Simade! aku dapat diakses juga melalui Mobile dan Whatsapp 0838-6662-3090"
-            ];
-            $answer = $fallbacks[array_rand($fallbacks)];
+        " . $databaseContext . "
+
+        Pertanyaan User: " . $request->input('question');
+
+        // -------------------------------------------------------------
+        // 2. PROSES KE GEMINI (dengan perbaikan error 400 dan cURL 56)
+        // -------------------------------------------------------------
+        if (empty($this->geminiApiKey)) {
+            $answer = "Fitur Chatbot AI tidak aktif karena kunci API belum diatur. Silakan hubungi admin.";
+        } else {
+            try {
+                $client = new GuzzleClient();
+                $url = "https://generativelanguage.googleapis.com/v1beta/models/" . self::GEMINI_MODEL . ":generateContent?key=" . $this->geminiApiKey;
+
+                $response = $client->post($url, [
+                    'json' => [
+                        'contents' => [
+                            ['parts' => [['text' => $systemInstruction]]], // Menggunakan $systemInstruction sebagai prompt
+                        ],
+                        'generationConfig' => [ // Perbaikan Error 400: Mengganti 'config' menjadi 'generationConfig'
+                            'temperature' => 0.6,
+                        ],
+                    ],
+                    'timeout' => 30, // Perbaikan cURL 56: Menambahkan timeout
+                ]);
+
+                $responseData = json_decode($response->getBody()->getContents(), true);
+                $geminiText = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+                if ($geminiText) {
+                    $answer = trim($geminiText);
+                } else {
+                    throw new \Exception("Gemini tidak dapat menghasilkan respons (konten mungkin tidak sesuai).");
+                }
+
+            } catch (\Exception $e) {
+                Log::error("Gemini API Error: " . $e->getMessage());
+
+                $answer = "Maaf, terjadi masalah koneksi dengan sistem AI. Coba tanyakan hal lain atau hubungi kontak resmi desa.";
+            }
         }
 
         return response()->json(['answer' => $answer]);
