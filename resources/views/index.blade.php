@@ -1,22 +1,31 @@
 @extends('layouts.main')
 
 @section('content')
-<!-- ======= Hero Section ======= -->
-<section id="hero" class="hero-modern">
+<!-- ======= Modern Hero Section ======= -->
+<section id="hero" class="modern-hero">
   <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
     <div class="carousel-inner">
       @foreach ($sliders as $key => $slider)
       <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
         <div class="hero-slide" style="background-image: url('{{ asset('storage/' . $slider->img_slider) }}');">
-          <div class="hero-overlay"></div>
+          <div class="hero-gradient-overlay"></div>
           <div class="container">
-            <div class="hero-content">
-              <span class="hero-label">Desa Dongkal</span>
-              <h1 class="hero-title">{{ $slider->judul }}</h1>
-              <p class="hero-desc">{{ $slider->deskripsi }}</p>
-              <div class="hero-actions">
-                <a href="#services" class="btn-primary-custom">Jelajahi Layanan</a>
-                <a href="#news" class="btn-outline-custom">Berita Terkini</a>
+            <div class="hero-content-wrapper">
+              <div class="hero-badge">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Desa Dongkal</span>
+              </div>
+              <h1 class="hero-main-title" data-aos="fade-up">{{ $slider->judul }}</h1>
+              <p class="hero-description" data-aos="fade-up" data-aos-delay="100">{{ $slider->deskripsi }}</p>
+              <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="200">
+                <a href="#services" class="cta-btn primary">
+                  <span>Jelajahi Layanan</span>
+                  <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#news" class="cta-btn secondary">
+                  <span>Berita Terkini</span>
+                  <i class="bi bi-newspaper"></i>
+                </a>
               </div>
             </div>
           </div>
@@ -25,72 +34,98 @@
       @endforeach
     </div>
 
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-      <i class="bi bi-chevron-left"></i>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-      <i class="bi bi-chevron-right"></i>
-    </button>
+    <div class="carousel-navigation">
+      <button class="carousel-control prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button class="carousel-control next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
 
-    <div class="carousel-indicators">
+    <div class="carousel-indicators-modern">
       @foreach ($sliders as $key => $slider)
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $key }}" class="{{ $key === 0 ? 'active' : '' }}"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $key }}"
+              class="indicator {{ $key === 0 ? 'active' : '' }}">
+        <span class="progress-bar"></span>
+      </button>
       @endforeach
     </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-arrow"></div>
   </div>
 </section>
 
 <!-- ======= Services Section ======= -->
-<section id="services" class="section-modern">
+<section id="services" class="services-section">
   <div class="container">
-    <div class="section-head">
-      <span class="section-label">Layanan Digital</span>
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-badge">Layanan Digital</div>
       <h2 class="section-title">Akses Cepat & Mudah</h2>
-      <p class="section-subtitle">Nikmati berbagai layanan digital Desa Dongkal</p>
+      <p class="section-subtitle">Nikmati berbagai layanan digital Desa Dongkal yang inovatif</p>
     </div>
 
-    <div class="row g-4">
-      <div class="col-lg-3 col-md-6">
-        <a href="/data-desa" class="service-box">
-          <div class="service-icon bg-primary">
+    <div class="services-grid">
+      <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="service-icon-wrapper">
+          <div class="service-icon primary">
             <i class="bi bi-bar-chart-line-fill"></i>
           </div>
-          <h4>Data Statistik</h4>
-          <p>Lihat data statistik desa secara lengkap dan terperinci</p>
-          <span class="service-arrow"><i class="bi bi-arrow-right"></i></span>
+          <div class="icon-bg"></div>
+        </div>
+        <h3>Data Statistik</h3>
+        <p>Lihat data statistik desa secara lengkap dan terperinci dengan visualisasi interaktif</p>
+        <a href="/data-desa" class="service-link">
+          <span>Selengkapnya</span>
+          <i class="bi bi-arrow-up-right"></i>
         </a>
       </div>
 
-      <div class="col-lg-3 col-md-6">
-        <a href="/peta-desa" class="service-box">
-          <div class="service-icon bg-success">
+      <div class="service-card" data-aos="fade-up" data-aos-delay="150">
+        <div class="service-icon-wrapper">
+          <div class="service-icon success">
             <i class="bi bi-globe-asia-australia"></i>
           </div>
-          <h4>Peta Desa</h4>
-          <p>Jelajahi wilayah desa melalui peta interaktif</p>
-          <span class="service-arrow"><i class="bi bi-arrow-right"></i></span>
+          <div class="icon-bg"></div>
+        </div>
+        <h3>Peta Desa</h3>
+        <p>Jelajahi wilayah desa melalui peta digital interaktif dengan informasi lengkap</p>
+        <a href="/peta-desa" class="service-link">
+          <span>Selengkapnya</span>
+          <i class="bi bi-arrow-up-right"></i>
         </a>
       </div>
 
-      <div class="col-lg-3 col-md-6">
-        <a href="/umkm" class="service-box">
-          <div class="service-icon bg-warning">
+      <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="service-icon-wrapper">
+          <div class="service-icon warning">
             <i class="bi bi-shop"></i>
           </div>
-          <h4>UMKM Desa</h4>
-          <p>Dukung produk lokal dan UMKM masyarakat</p>
-          <span class="service-arrow"><i class="bi bi-arrow-right"></i></span>
+          <div class="icon-bg"></div>
+        </div>
+        <h3>UMKM Desa</h3>
+        <p>Dukung produk lokal dan UMKM masyarakat desa melalui platform digital</p>
+        <a href="/umkm" class="service-link">
+          <span>Selengkapnya</span>
+          <i class="bi bi-arrow-up-right"></i>
         </a>
       </div>
 
-      <div class="col-lg-3 col-md-6">
-        <a href="/kontak" class="service-box">
-          <div class="service-icon bg-danger">
+      <div class="service-card" data-aos="fade-up" data-aos-delay="250">
+        <div class="service-icon-wrapper">
+          <div class="service-icon danger">
             <i class="bi bi-telephone-forward"></i>
           </div>
-          <h4>Pengaduan</h4>
-          <p>Layanan tersedia di aplikasi mobile</p>
-          <span class="service-arrow"><i class="bi bi-arrow-right"></i></span>
+          <div class="icon-bg"></div>
+        </div>
+        <h3>Pengaduan</h3>
+        <p>Layanan pengaduan masyarakat yang cepat dan transparan melalui aplikasi</p>
+        <a href="/kontak" class="service-link">
+          <span>Selengkapnya</span>
+          <i class="bi bi-arrow-up-right"></i>
         </a>
       </div>
     </div>
@@ -98,20 +133,21 @@
 </section>
 
 <!-- ======= Video Profile Section ======= -->
-<section id="video" class="section-modern section-dark">
+<section id="video" class="video-section">
   <div class="container">
-    <div class="section-head">
-      <span class="section-label">Video Profil</span>
-      <h2 class="section-title text-white">Kenali Desa Dongkal</h2>
-      <p class="section-subtitle text-white-50">Saksikan keindahan dan potensi desa</p>
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-badge">Video Profil</div>
+      <h2 class="section-title">Kenali Desa Dongkal</h2>
+      <p class="section-subtitle">Saksikan keindahan alam dan potensi desa melalui video profil</p>
     </div>
 
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <div class="video-box">
-          <div class="ratio ratio-16x9">
-            <iframe src="{{ $videoProfil->url_video }}" title="Video Profil Desa" allowfullscreen></iframe>
-          </div>
+    <div class="video-container" data-aos="zoom-in" data-aos-delay="100">
+      <div class="video-wrapper">
+        <div class="video-play-button">
+          <i class="bi bi-play-fill"></i>
+        </div>
+        <div class="ratio ratio-16x9">
+          <iframe src="{{ $videoProfil->url_video }}" title="Video Profil Desa" allowfullscreen></iframe>
         </div>
       </div>
     </div>
@@ -119,530 +155,895 @@
 </section>
 
 <!-- ======= Berita Desa Section ======= -->
-<section id="news" class="section-modern">
+<section id="news" class="news-section">
   <div class="container">
-    <div class="section-head">
-      <span class="section-label">Berita Terkini</span>
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-badge">Berita Terkini</div>
       <h2 class="section-title">Kabar Terbaru</h2>
-      <p class="section-subtitle">Update seputar kegiatan dan perkembangan desa</p>
+      <p class="section-subtitle">Update seputar kegiatan dan perkembangan desa terkini</p>
     </div>
 
-    <div class="row g-4">
+    <div class="news-grid">
       @foreach ($beritas as $berita)
-      <div class="col-lg-4 col-md-6">
-        <article class="news-card">
-          <div class="news-img">
-            <img src="{{ asset('storage/' . $berita->gambar) }}" alt="{{ $berita->judul }}">
-            <span class="news-date">
-              <i class="bi bi-calendar-event"></i> {{ $berita->created_at->diffForHumans() }}
+      <article class="news-article" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+        <div class="article-image">
+          <img src="{{ asset('storage/' . $berita->gambar) }}" alt="{{ $berita->judul }}">
+          <div class="article-overlay">
+            <span class="article-date">
+              <i class="bi bi-calendar-event"></i>
+              {{ $berita->created_at->diffForHumans() }}
             </span>
           </div>
-          <div class="news-body">
-            <h3>{{ $berita->judul }}</h3>
-            <p>{{ $berita->excerpt }}</p>
-            <a href="/berita/{{ $berita->slug }}" class="news-link">
-              Baca Selengkapnya <i class="bi bi-arrow-right"></i>
-            </a>
-          </div>
-        </article>
-      </div>
+        </div>
+        <div class="article-content">
+          <h3>{{ $berita->judul }}</h3>
+          <p>{{ $berita->excerpt }}</p>
+          <a href="/berita/{{ $berita->slug }}" class="article-link">
+            <span>Baca Selengkapnya</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </article>
       @endforeach
     </div>
 
-    <div class="text-center mt-5">
-      <a href="/berita" class="btn-primary-custom btn-large">
-        Lihat Semua Berita <i class="bi bi-arrow-right ms-2"></i>
+    <div class="text-center mt-5" data-aos="fade-up">
+      <a href="/berita" class="cta-btn primary large">
+        <span>Lihat Semua Berita</span>
+        <i class="bi bi-arrow-right"></i>
       </a>
     </div>
   </div>
 </section>
 
 <style>
-/* === Global Variables === */
+/* ===== MODERN VARIABLES ===== */
 :root {
-  --primary: #4f46e5;
+  /* Colors */
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+
   --success: #10b981;
+  --success-light: #34d399;
+  --success-gradient: linear-gradient(135deg, #10b981, #34d399);
+
   --warning: #f59e0b;
+  --warning-light: #fbbf24;
+  --warning-gradient: linear-gradient(135deg, #f59e0b, #fbbf24);
+
   --danger: #ef4444;
+  --danger-light: #f87171;
+  --danger-gradient: linear-gradient(135deg, #ef4444, #f87171);
+
   --dark: #1e293b;
+  --dark-light: #334155;
+  --darker: #0f172a;
+
   --gray: #64748b;
+  --gray-light: #94a3b8;
+  --gray-lighter: #e2e8f0;
+
   --light: #f8fafc;
+  --white: #ffffff;
+
+  /* Effects */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.16);
+  --shadow-xl: 0 25px 60px rgba(0, 0, 0, 0.20);
+
+  --glass: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+
+  --border-radius: 16px;
+  --border-radius-lg: 24px;
+  --border-radius-xl: 32px;
+
+  --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-slow: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* Spacing */
+  --section-padding: 120px 0;
 }
 
-/* === Reset === */
+/* ===== RESET & BASE STYLES ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: var(--dark);
-  line-height: 1.6;
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
 }
 
-/* === Hero Section === */
-.hero-modern {
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--dark);
+  line-height: 1.7;
+  overflow-x: hidden;
+  background: var(--light);
+}
+
+/* ===== MODERN HERO SECTION ===== */
+.modern-hero {
   position: relative;
   height: 100vh;
-  min-height: 600px;
+  min-height: 700px;
+  overflow: hidden;
 }
 
 .hero-slide {
+  position: relative;
   height: 100vh;
-  min-height: 600px;
+  min-height: 700px;
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   display: flex;
   align-items: center;
-  position: relative;
 }
 
-.hero-overlay {
+.hero-gradient-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(16, 185, 129, 0.8));
-  z-index: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.85) 0%,
+    rgba(30, 41, 59, 0.75) 50%,
+    rgba(15, 23, 42, 0.85) 100%
+  );
+  backdrop-filter: blur(2px);
 }
 
-.hero-content {
+.hero-content-wrapper {
   position: relative;
-  z-index: 2;
-  max-width: 700px;
-  color: white;
+  z-index: 10;
+  max-width: 800px;
+  color: var(--white);
+  padding: 0 2rem;
 }
 
-.hero-label {
-  display: inline-block;
-  padding: 8px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 50px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
-  margin-bottom: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 2rem;
+  color: var(--white);
+  box-shadow: var(--glass-shadow);
 }
 
-.hero-title {
-  font-size: 56px;
+.hero-main-title {
+  font-size: 4rem;
   font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 20px;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
   letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.hero-desc {
-  font-size: 20px;
+.hero-description {
+  font-size: 1.25rem;
   line-height: 1.7;
-  margin-bottom: 35px;
-  opacity: 0.95;
+  margin-bottom: 3rem;
+  opacity: 0.9;
+  color: var(--gray-lighter);
 }
 
-.hero-actions {
+.hero-cta-group {
   display: flex;
-  gap: 15px;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-/* === Buttons === */
-.btn-primary-custom,
-.btn-outline-custom {
+/* ===== MODERN BUTTONS ===== */
+.cta-btn {
   display: inline-flex;
   align-items: center;
-  padding: 14px 32px;
+  gap: 0.75rem;
+  padding: 1rem 2.25rem;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1rem;
   border-radius: 50px;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-primary-custom {
-  background: white;
-  color: var(--primary);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.7s ease;
 }
 
-.btn-primary-custom:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  color: var(--primary);
+.cta-btn:hover::before {
+  left: 100%;
 }
 
-.btn-outline-custom {
+.cta-btn.primary {
+  background: var(--primary-gradient);
+  color: var(--white);
+  box-shadow: var(--shadow-lg);
+}
+
+.cta-btn.primary:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+.cta-btn.secondary {
   background: transparent;
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-}
-
-.btn-outline-custom:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: white;
-  color: white;
-}
-
-.btn-large {
-  padding: 16px 40px;
-  font-size: 18px;
-}
-
-/* === Carousel Controls === */
-.carousel-control-prev,
-.carousel-control-next {
-  width: 50px;
-  height: 50px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  opacity: 0.8;
-  transition: all 0.3s;
 }
 
-.carousel-control-prev:hover,
-.carousel-control-next:hover {
-  opacity: 1;
+.cta-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--white);
+  transform: translateY(-2px);
+}
+
+.cta-btn.large {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.125rem;
+}
+
+/* ===== MODERN CAROUSEL CONTROLS ===== */
+.carousel-navigation {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.carousel-control {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  pointer-events: all;
+  box-shadow: var(--glass-shadow);
+}
+
+.carousel-control:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+.carousel-control.prev {
+  left: 2rem;
+}
+
+.carousel-control.next {
+  right: 2rem;
+}
+
+.carousel-indicators-modern {
+  position: absolute;
+  bottom: 3rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  z-index: 20;
+}
+
+.indicator {
+  width: 40px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.3);
+  border: none;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  transition: var(--transition);
 }
 
-.carousel-control-prev {
-  left: 30px;
+.indicator.active {
+  background: rgba(255, 255, 255, 0.5);
 }
 
-.carousel-control-next {
-  right: 30px;
+.indicator.active .progress-bar {
+  animation: progress 5s linear infinite;
 }
 
-.carousel-control-prev i,
-.carousel-control-next i {
-  font-size: 24px;
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
 }
 
-.carousel-indicators {
-  bottom: 30px;
-  margin: 0;
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: var(--white);
+  transform: translateX(-100%);
 }
 
-.carousel-indicators button {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin: 0 5px;
-  border: 2px solid white;
-  opacity: 0.5;
+.scroll-indicator {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
 }
 
-.carousel-indicators button.active {
-  width: 30px;
-  border-radius: 5px;
-  opacity: 1;
+.scroll-arrow {
+  width: 2px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.6);
+  position: relative;
 }
 
-/* === Section Styles === */
-.section-modern {
-  padding: 100px 0;
+.scroll-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+  transform: translateX(-50%) rotate(45deg);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) rotate(45deg) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) rotate(45deg) translateY(-10px);
+  }
+  60% {
+    transform: translateX(-50%) rotate(45deg) translateY(-5px);
+  }
+}
+
+/* ===== SECTIONS STYLES ===== */
+.services-section,
+.news-section {
+  padding: var(--section-padding);
   background: var(--light);
 }
 
-.section-dark {
-  background: var(--dark);
+.video-section {
+  padding: var(--section-padding);
+  background: var(--darker);
+  color: var(--white);
 }
 
-.section-head {
+.section-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 4rem;
 }
 
-.section-label {
+.section-badge {
   display: inline-block;
-  padding: 8px 20px;
-  background: rgba(79, 70, 229, 0.1);
+  padding: 0.75rem 1.5rem;
+  background: rgba(37, 99, 235, 0.1);
   color: var(--primary);
   border-radius: 50px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
+}
+
+.video-section .section-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
 }
 
 .section-title {
-  font-size: 48px;
+  font-size: 3.5rem;
   font-weight: 800;
-  margin-bottom: 15px;
-  color: var(--dark);
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+.video-section .section-title {
+  color: var(--white);
 }
 
 .section-subtitle {
-  font-size: 18px;
+  font-size: 1.25rem;
   color: var(--gray);
   max-width: 600px;
   margin: 0 auto;
+  line-height: 1.6;
 }
 
-/* === Service Box === */
-.service-box {
-  display: block;
-  background: white;
-  border-radius: 20px;
-  padding: 35px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  height: 100%;
+.video-section .section-subtitle {
+  color: var(--gray-light);
+}
+
+/* ===== SERVICES GRID ===== */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.service-card {
+  background: var(--white);
+  padding: 3rem 2rem;
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+  transition: var(--transition);
   position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
-.service-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-  border-color: transparent;
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--primary-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-xl);
+}
+
+.service-card:hover::before {
+  transform: scaleX(1);
+}
+
+.service-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2rem;
 }
 
 .service-icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 16px;
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 25px;
-  font-size: 32px;
-  color: white;
+  font-size: 2rem;
+  color: var(--white);
+  position: relative;
+  z-index: 2;
+  transition: var(--transition);
 }
 
-.bg-primary {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+.service-card:hover .service-icon {
+  transform: scale(1.1) rotate(5deg);
 }
 
-.bg-success {
-  background: linear-gradient(135deg, #10b981, #059669);
+.icon-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: var(--transition);
 }
 
-.bg-warning {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+.service-card:hover .icon-bg {
+  transform: translate(-50%, -50%) scale(1.2);
 }
 
-.bg-danger {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+.service-icon.primary {
+  background: var(--primary-gradient);
 }
 
-.service-box h4 {
-  font-size: 22px;
+.service-icon.success {
+  background: var(--success-gradient);
+}
+
+.service-icon.warning {
+  background: var(--warning-gradient);
+}
+
+.service-icon.danger {
+  background: var(--danger-gradient);
+}
+
+.icon-bg.primary { background: var(--primary); }
+.icon-bg.success { background: var(--success); }
+.icon-bg.warning { background: var(--warning); }
+.icon-bg.danger { background: var(--danger); }
+
+.service-card h3 {
+  font-size: 1.5rem;
   font-weight: 700;
+  margin-bottom: 1rem;
   color: var(--dark);
-  margin-bottom: 12px;
 }
 
-.service-box p {
-  font-size: 15px;
+.service-card p {
   color: var(--gray);
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
   line-height: 1.6;
 }
 
-.service-arrow {
+.service-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--light);
-  border-radius: 50%;
+  gap: 0.5rem;
   color: var(--primary);
-  transition: all 0.3s;
-}
-
-.service-box:hover .service-arrow {
-  background: var(--primary);
-  color: white;
-  transform: translateX(5px);
-}
-
-/* === Video Box === */
-.video-box {
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.video-box iframe {
-  border: none;
-}
-
-/* === News Card === */
-.news-card {
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.news-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-}
-
-.news-img {
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
   position: relative;
-  height: 250px;
+}
+
+.service-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.service-link:hover {
+  gap: 0.75rem;
+}
+
+.service-link:hover::after {
+  width: 100%;
+}
+
+/* ===== VIDEO SECTION ===== */
+.video-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.video-wrapper {
+  position: relative;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  transition: var(--transition);
+}
+
+.video-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.video-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 2rem;
+  z-index: 10;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.video-wrapper:hover .video-play-button {
+  background: var(--white);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* ===== NEWS GRID ===== */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.news-article {
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.news-article:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+}
+
+.article-image {
+  position: relative;
+  height: 240px;
   overflow: hidden;
 }
 
-.news-img img {
+.article-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s;
+  transition: var(--transition-slow);
 }
 
-.news-card:hover .news-img img {
-  transform: scale(1.05);
+.news-article:hover .article-image img {
+  transform: scale(1.1);
 }
 
-.news-date {
+.article-overlay {
   position: absolute;
-  top: 15px;
-  left: 15px;
-  padding: 8px 16px;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.3));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.news-article:hover .article-overlay {
+  opacity: 1;
+}
+
+.article-date {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 50px;
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--dark);
-  z-index: 2;
+  box-shadow: var(--shadow-sm);
 }
 
-.news-body {
-  padding: 30px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.article-content {
+  padding: 2rem;
 }
 
-.news-body h3 {
-  font-size: 20px;
+.article-content h3 {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--dark);
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
   line-height: 1.4;
+  color: var(--dark);
 }
 
-.news-body p {
-  font-size: 15px;
+.article-content p {
   color: var(--gray);
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
-  flex: 1;
 }
 
-.news-link {
+.article-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 15px;
+  gap: 0.5rem;
   color: var(--primary);
   text-decoration: none;
-  transition: gap 0.3s;
+  font-weight: 600;
+  transition: var(--transition);
+  position: relative;
 }
 
-.news-link:hover {
-  gap: 12px;
-  color: var(--primary);
+.article-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s ease;
 }
 
-/* === Responsive === */
-@media (max-width: 992px) {
-  .hero-title {
-    font-size: 42px;
-  }
+.article-link:hover {
+  gap: 0.75rem;
+}
 
-  .hero-desc {
-    font-size: 18px;
+.article-link:hover::after {
+  width: 100%;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+  .hero-main-title {
+    font-size: 3.5rem;
   }
 
   .section-title {
-    font-size: 38px;
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 992px) {
+  :root {
+    --section-padding: 100px 0;
   }
 
-  .section-modern {
-    padding: 80px 0;
+  .hero-main-title {
+    font-size: 3rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
+  .modern-hero {
+    min-height: 600px;
+  }
+
   .hero-slide {
-    height: 80vh;
+    min-height: 600px;
+    background-attachment: scroll;
   }
 
-  .hero-title {
-    font-size: 36px;
+  .hero-main-title {
+    font-size: 2.5rem;
   }
 
-  .hero-desc {
-    font-size: 16px;
+  .hero-description {
+    font-size: 1.125rem;
   }
 
-  .hero-actions {
+  .hero-cta-group {
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .hero-actions a {
+  .cta-btn {
     width: 100%;
     justify-content: center;
   }
 
-  .carousel-control-prev,
-  .carousel-control-next {
-    width: 40px;
-    height: 40px;
+  .carousel-control {
+    width: 50px;
+    height: 50px;
   }
 
-  .carousel-control-prev {
-    left: 15px;
+  .carousel-control.prev {
+    left: 1rem;
   }
 
-  .carousel-control-next {
-    right: 15px;
+  .carousel-control.next {
+    right: 1rem;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
   }
 
   .section-title {
-    font-size: 32px;
-  }
-
-  .section-modern {
-    padding: 60px 0;
-  }
-
-  .service-box {
-    padding: 25px;
+    font-size: 2.25rem;
   }
 }
 
 @media (max-width: 576px) {
-  .hero-title {
-    font-size: 28px;
+  .hero-main-title {
+    font-size: 2rem;
+  }
+
+  .hero-content-wrapper {
+    padding: 0 1rem;
   }
 
   .section-title {
-    font-size: 28px;
+    font-size: 2rem;
   }
 
-  .btn-primary-custom,
-  .btn-outline-custom {
-    padding: 12px 24px;
-    font-size: 14px;
+  .section-badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .service-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .article-content {
+    padding: 1.5rem;
+  }
+}
+
+/* ===== AOS CUSTOM ANIMATIONS ===== */
+[data-aos] {
+  pointer-events: none;
+}
+
+[data-aos].aos-animate {
+  pointer-events: auto;
+}
+
+/* ===== SMOOTH SCROLL BEHAVIOR ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
   }
 }
 </style>
+
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+      duration: 800,
+      easing: 'ease-out-cubic',
+      once: true,
+      offset: 50
+    });
+  });
+</script>
 @endsection

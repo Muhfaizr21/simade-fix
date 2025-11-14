@@ -8,6 +8,7 @@
   <title>Dashboard Admin - SIMADE</title>
   <link rel="shortcut icon" type="image/png" href="/admin/assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="/admin/assets/css/styles.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Jquery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
