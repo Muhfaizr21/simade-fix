@@ -56,6 +56,10 @@
 <!-- End Header -->
 
 <style>
+    body {
+            padding-top: 90px;
+    transition: padding 0.3s ease;
+    }
 /* === Header Styling === */
 #header {
   background: white !important;
