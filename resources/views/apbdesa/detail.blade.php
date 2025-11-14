@@ -1,37 +1,70 @@
 @extends('layouts.main')
 
 @section('content')
-    <section class="counts section-bg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 mx-auto">
-                    <div class="row">
-                        <div class="col-md-12 mb-5">
-                            <div class="card p-3">
-                                <div class="card-body">
-                                    <p><a href="/apbdesa">Anggaran</a> >> <a
-                                            href="{{ $anggaran->slug }}">{{ $anggaran->judul }}</a></p>
 
-                                    <h1 class="mb-3">{{ $anggaran->judul }}</h1>
-
-                                    <div class="news-date mb-4">
-                                        <span class="mr-3"><i class="bi bi-person-circle">
-                                                Diposting oleh : {{ $anggaran->user->name }}</i></span>
-                                    </div>
-
-                                    <img src="{{ asset('storage/' . $anggaran->gambar) }}" alt="Gambar Andalan"
-                                        class="img-fluid rounded mb-5" style="height: 450px; width: 100%;">
-
-                                    <p>{!! $anggaran->keterangan !!}</p>
-                                </div>
-                            </div>
-                        </div>
+{{-- HERO HEADER --}}
+<section
+    class="w-100 d-flex align-items-center mb-5"
+    style="
+        background: linear-gradient(135deg, #0f172a, #1e3a8a, #3b82f6);
+        padding: 70px 0;
+        color: #fff;
+    "
+>
+    <div class="container text-center">
+        <h1 class="fw-bold" style="font-size: 2.5rem;">
+            {{ $anggaran->judul }}
+        </h1>
+        <p class="mt-3" style="opacity:.85;">
+            Transparansi Anggaran Desa — Informasi Resmi
+        </p>
+    </div>
+</section>
 
 
+
+<section class="counts section-bg">
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <article class="card border-0 shadow-sm rounded-4 p-4">
+
+                    {{-- Breadcrumb --}}
+                    <nav style="font-size: 0.95rem;">
+                        <a href="/apbdesa" class="text-decoration-none">Anggaran</a>
+                        <span class="mx-2">›</span>
+                        <span class="text-muted">{{ $anggaran->judul }}</span>
+                    </nav>
+
+                    {{-- Meta --}}
+                    <div class="mt-3 mb-4 text-muted" style="font-size: 0.95rem;">
+                        <i class="bi bi-person-circle"></i>
+                        Diposting oleh <b>{{ $anggaran->user->name }}</b>
                     </div>
-                </div>
+
+                    {{-- Image --}}
+                    <div class="text-center mb-4">
+                        <img
+                            src="{{ asset('storage/' . $anggaran->gambar) }}"
+                            alt="Gambar Andalan"
+                            class="img-fluid rounded-3 shadow-sm"
+                            style="max-height: 480px; width: 100%; object-fit: cover;"
+                        >
+                    </div>
+
+                    {{-- Content --}}
+                    <div class="mt-3" style="font-size: 1.1rem; line-height: 1.7;">
+                        {!! $anggaran->keterangan !!}
+                    </div>
+
+                </article>
 
             </div>
         </div>
-    </section>
+
+    </div>
+</section>
+
 @endsection
