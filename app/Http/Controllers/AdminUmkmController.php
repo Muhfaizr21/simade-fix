@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Umkm;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AdminUmkmController extends Controller
 {
     public function index()
     {
         return view('admin.umkm.index', [
-            'umkms' => Umkm::latest()->get()
+            'umkms'  => Umkm::orderBy('id', 'DESC')->get()
         ]);
     }
 
@@ -22,85 +25,145 @@ class AdminUmkmController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'foto'      => 'required|image|max:2048',
+        $validator = Validator::make($request->all(), [
+            'foto'      => 'required|mimes:jpeg,jpg,png',
             'produk'    => 'required',
             'slug'      => 'required|unique:umkms',
             'harga'     => 'required|numeric',
             'no_hp'     => 'required|numeric',
             'deskripsi' => 'required'
+        ], [
+            'foto.required'         => 'Wajib menambahkan foto !',
+            'foto.mimes'            => 'Format foto yang di izinkan Jpeg, Jpg, Png',
+            'produk.required'       => 'Wajib menambahkan nama produk !',
+            'slug.required'         => 'Slug tidak boleh kosong !',
+            'slug.unique'           => 'Slug tidak boleh sama !',
+            'harga.required'        => 'Wajib menambahkan harga !',
+            'harga.numeric'         => 'Tambahkan format angka !',
+            'no_hp.required'        => 'Wajib menambahkan No Hp !',
+            'no_hp.numeric'         => 'Tambahkan format angka !',
+            'deskripsi.required'    => 'Wajib menambahkan deskripsi produk !'
         ]);
+
+        if ($validator->fails()) {
+            return redirect('/admin/umkm/create')
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         // Upload foto
-        $fotoPath = $request->file('foto')->store('img-produk', 'public');
+        if ($request->hasFile('foto')) {
+            $path       = 'img-produk/';
+            $file       = $request->file('foto');
+            $extension  = $file->getClientOriginalExtension();
+            $fileName   = uniqid() . '.' . $extension;
+            $foto       = $file->storeAs($path, $fileName, 'public');
+        } else {
+            $foto = null;
+        }
 
         Umkm::create([
-            'foto'      => $fotoPath,
-            'produk'    => $request->produk,
-            'slug'      => $request->slug,
-            'harga'     => $request->harga,
-            'no_hp'     => $request->no_hp,
-            'deskripsi' => $request->deskripsi,
-            'excerpt'   => str()->limit(strip_tags($request->deskripsi), 100),
-            'user_id'   => auth()->id(),
+            'foto'          => $foto,
+            'produk'        => $request->produk,
+            'slug'          => $request->slug,
+            'harga'         => $request->harga,
+            'no_hp'         => $request->no_hp,
+            'deskripsi'     => $request->deskripsi,
+            'user_id'       => auth()->user()->id,
         ]);
 
-        return redirect('/admin/umkm')->with('success', 'Data berhasil ditambahkan');
+        return redirect('/admin/umkm')->with('success', 'Berhasil menambahkan data produk umkm');
     }
 
-    public function edit(Umkm $umkm)
+    public function edit($id)
     {
-        return view('admin.umkm.edit', compact('umkm'));
+        $umkm = Umkm::find($id);
+        return view('admin.umkm.edit', [
+            'umkm'  => $umkm
+        ]);
     }
 
-    public function update(Request $request, Umkm $umkm)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'foto'      => 'nullable|image|max:2048',
+        $umkm = Umkm::find($id);
+
+        // Validasi slug
+        $slugRule = $request->slug != $umkm->slug
+            ? 'required|unique:umkms'
+            : 'required';
+
+        $validator = Validator::make($request->all(), [
             'produk'    => 'required',
-            'slug'      => 'required|unique:umkms,slug,' . $umkm->id,
+            'slug'      => $slugRule,
             'harga'     => 'required|numeric',
             'no_hp'     => 'required|numeric',
             'deskripsi' => 'required'
+        ], [
+            'produk.required'       => 'Wajib menambahkan nama produk !',
+            'slug.required'         => 'Slug tidak boleh kosong !',
+            'slug.unique'           => 'Slug tidak boleh sama !',
+            'harga.required'        => 'Wajib menambahkan harga !',
+            'harga.numeric'         => 'Tambahkan format angka !',
+            'no_hp.required'        => 'Wajib menambahkan No Hp !',
+            'no_hp.numeric'         => 'Tambahkan format angka !',
+            'deskripsi.required'    => 'Wajib menambahkan deskripsi produk !'
         ]);
 
-        // Jika ada foto baru
+        // Handle foto
         if ($request->hasFile('foto')) {
             // Hapus foto lama
-            Storage::disk('public')->delete($umkm->foto);
+            if ($umkm->foto) {
+                Storage::disk('public')->delete($umkm->foto);
+            }
 
-            // Upload foto baru
-            $fotoPath = $request->file('foto')->store('img-produk', 'public');
-            $umkm->foto = $fotoPath;
+            // Upload baru
+            $path       = 'img-produk/';
+            $file       = $request->file('foto');
+            $extension  = $file->getClientOriginalExtension();
+            $fileName   = uniqid() . '.' . $extension;
+            $foto       = $file->storeAs($path, $fileName, 'public');
+        } else {
+            $foto = $umkm->foto;
+        }
+
+        if ($validator->fails()) {
+            return redirect("/admin/umkm/{$umkm->id}/edit")
+                ->withErrors($validator)
+                ->withInput();
         }
 
         // Update data
-        $umkm->produk = $request->produk;
-        $umkm->slug = $request->slug;
-        $umkm->harga = $request->harga;
-        $umkm->no_hp = $request->no_hp;
-        $umkm->deskripsi = $request->deskripsi;
-        $umkm->excerpt = str()->limit(strip_tags($request->deskripsi), 100);
-        $umkm->user_id = auth()->id();
-        $umkm->save();
+        $umkm->update([
+            'foto'          => $foto,
+            'produk'        => $request->produk,
+            'slug'          => $request->slug,
+            'harga'         => $request->harga,
+            'no_hp'         => $request->no_hp,
+            'deskripsi'     => $request->deskripsi,
+            'user_id'       => auth()->user()->id,
+        ]);
 
-        return redirect('/admin/umkm')->with('success', 'Data berhasil diperbarui');
+        return redirect('/admin/umkm')->with('success', 'Berhasil memperbarui produk umkm');
     }
 
-    public function destroy(Umkm $umkm)
+    public function destroy($id)
     {
+        $umkm = Umkm::find($id);
+
         // Hapus foto
-        Storage::disk('public')->delete($umkm->foto);
+        if ($umkm->foto) {
+            Storage::disk('public')->delete($umkm->foto);
+        }
 
         // Hapus data
         $umkm->delete();
 
-        return redirect('/admin/umkm')->with('success', 'Data berhasil dihapus');
+        return redirect('/admin/umkm')->with('success', 'Berhasil menghapus produk umkm');
     }
 
     public function slug(Request $request)
     {
-        $slug = str()->slug($request->produk);
+        $slug = Str::slug($request->produk);
         return response()->json(['slug' => $slug]);
     }
 }
