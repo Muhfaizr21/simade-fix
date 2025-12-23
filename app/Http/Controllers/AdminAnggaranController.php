@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Berita;
 use App\Models\Anggaran;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class AdminAnggaranController extends Controller
 {
@@ -18,7 +14,7 @@ class AdminAnggaranController extends Controller
     public function index()
     {
         return view('admin.apbdes.index', [
-            'anggarans'     => Anggaran::orderBy('id', 'DESC')->get()
+            'anggarans' => Anggaran::orderBy('id', 'DESC')->get()
         ]);
     }
 
@@ -35,104 +31,89 @@ class AdminAnggaranController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'judul'         => 'required',
-            'slug'          => 'required|unique:anggarans',
-            'keterangan'    => 'required',
-            'gambar'        => 'required|mimes:jpg,png,jpeg'
+        $request->validate([
+            'judul'      => 'required',
+            'slug'       => 'required|unique:anggarans',
+            'keterangan' => 'required',
+            'gambar'     => 'required|image|mimes:jpg,png,jpeg|max:2048'
         ], [
-            'judul.required'        => "Form wajib di isi !",
-            'slug.required'         => 'Slug tidak boleh kosong !',
-            'slug.unique'           => 'Slug tidak boleh sama !',
-            'gambar.required'       => 'Form wajib di isi !',
-            'gambar.mimes'          => 'Format yang di izinkan png,jpg,jpeg !',
-            'keterangan.required'   => 'Form wajib di,'
+            'judul.required'      => "Form wajib di isi !",
+            'slug.required'       => 'Slug tidak boleh kosong !',
+            'slug.unique'         => 'Slug sudah digunakan !',
+            'gambar.required'     => 'Form wajib di isi !',
+            'gambar.image'        => 'File harus berupa gambar !',
+            'gambar.mimes'        => 'Format yang di izinkan png,jpg,jpeg !',
+            'keterangan.required' => 'Keterangan wajib diisi !'
         ]);
 
-        if ($request->hasFile('gambar')) {
-            $path       = 'img-anggaran/';
-            $file       = $request->file('gambar');
-            $extension  = $file->getClientOriginalExtension();
-            $fileName   = uniqid() . '.' . $extension;
-            $gambar     = $file->storeAs($path, $fileName, 'public');
-        } else {
-            $gambar     = null;
-        }
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        // Upload gambar
+        $gambar = $request->file('gambar')->store('img-anggaran', 'public');
 
         Anggaran::create([
-            'judul'         => $request->judul,
-            'slug'          => $request->slug,
-            'keterangan'    => $request->keterangan,
-            'gambar'        => $gambar,
-            'user_id'       => auth()->user()->id
+            'judul'      => $request->judul,
+            'slug'       => $request->slug,
+            'keterangan' => $request->keterangan,
+            'gambar'     => $gambar,
+            'user_id'    => auth()->id()
         ]);
+
         return redirect('/admin/apbdes')->with('success', 'Berhasil menambahkan data baru');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $anggaran = Anggaran::find($id);
-        return view('admin.apbdes.edit', [
-            'anggaran'  => $anggaran
-        ]);
+        $anggaran = Anggaran::findOrFail($id);
+        return view('admin.apbdes.edit', compact('anggaran'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $anggaran = Anggaran::find($id);
-        $validator = Validator::make($request->all(), [
-            'judul'         => 'required',
-            'slug'          => 'required',
-            'keterangan'    => 'required',
-            'gambar'        => 'required|mimes:jpg,png,jpeg'
+        $anggaran = Anggaran::findOrFail($id);
+
+        // Validasi slug (unik kecuali untuk data ini)
+        $slugRule = $request->slug != $anggaran->slug
+            ? 'required|unique:anggarans,slug,' . $id
+            : 'required';
+
+        $request->validate([
+            'judul'      => 'required',
+            'slug'       => $slugRule,
+            'keterangan' => 'required',
+            'gambar'     => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
         ], [
-            'judul.required'        => "Form wajib di isi !",
-            'slug.required'         => 'Slug tidak boleh kosong !',
-            'gambar.required'       => 'Form wajib di isi !',
-            'gambar.mimes'          => 'Format yang di izinkan png,jpg,jpeg !',
-            'keterangan.required'   => 'Form wajib di,'
+            'judul.required'      => "Form wajib di isi !",
+            'slug.required'       => 'Slug tidak boleh kosong !',
+            'slug.unique'         => 'Slug sudah digunakan !',
+            'gambar.image'        => 'File harus berupa gambar !',
+            'gambar.mimes'        => 'Format yang di izinkan png,jpg,jpeg !',
+            'keterangan.required' => 'Keterangan wajib diisi !'
         ]);
 
+        // Handle gambar upload
         if ($request->hasFile('gambar')) {
+            // Hapus gambar lama
             if ($anggaran->gambar) {
-                unlink('.' . Storage::url($anggaran->gambar));
+                Storage::disk('public')->delete($anggaran->gambar);
             }
-            $path       = 'img-anggaran/';
-            $file       = $request->file('gambar');
-            $extension  = $file->getClientOriginalExtension();
-            $fileName   = uniqid() . '.' . $extension;
-            $gambar     = $file->storeAs($path, $fileName, 'public');
+
+            // Upload gambar baru
+            $gambar = $request->file('gambar')->store('img-anggaran', 'public');
         } else {
-            $validator = Validator::make($request->all(), [
-                'judul'        => 'required',
-                'gambar'       => 'mimes:png,jpg,jpeg',
-                'keterangan'   => 'required'
-            ], [
-                'judul.required'        => 'Form wajib di isi !',
-                'gambar.mimes'          => 'Format yang di izinkan png,jpg,jpeg !',
-                'keterangan.required'   => 'Form wajib di isi !'
-            ]);
             $gambar = $anggaran->gambar;
         }
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
+        // Update data
         $anggaran->update([
-            'judul'         => $request->judul,
-            'gambar'        => $gambar,
-            'keterangan'    => $request->keterangan
+            'judul'      => $request->judul,
+            'slug'       => $request->slug,
+            'keterangan' => $request->keterangan,
+            'gambar'     => $gambar
         ]);
 
         return redirect('/admin/apbdes')->with('success', 'Berhasil memperbarui data');
@@ -141,10 +122,16 @@ class AdminAnggaranController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $anggaran = Anggaran::find($id);
-        unlink('.' . Storage::url($anggaran->gambar));
+        $anggaran = Anggaran::findOrFail($id);
+
+        // Hapus gambar
+        if ($anggaran->gambar) {
+            Storage::disk('public')->delete($anggaran->gambar);
+        }
+
+        // Hapus data
         $anggaran->delete();
 
         return redirect()->back()->with('success', 'Berhasil menghapus data !');
@@ -155,7 +142,7 @@ class AdminAnggaranController extends Controller
      */
     public function slug(Request $request)
     {
-        $slug = SlugService::createSlug(Berita::class, 'slug', $request->judul);
+        $slug = \Illuminate\Support\Str::slug($request->judul);
         return response()->json(['slug' => $slug]);
     }
 }
