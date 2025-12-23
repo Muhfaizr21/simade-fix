@@ -47,15 +47,21 @@ class AdminIdentitasSitusController extends Controller
         // Handle logo upload
         if ($request->hasFile('logo')) {
             // Hapus logo lama jika ada
-            if ($situs->logo && Storage::disk('public')->exists($situs->logo)) {
-                Storage::disk('public')->delete($situs->logo);
+            if ($situs->logo) {
+                $oldLogoPath = $situs->logo;
+                // Pastikan path yang benar
+                if (Storage::disk('public')->exists($oldLogoPath)) {
+                    Storage::disk('public')->delete($oldLogoPath);
+                }
             }
 
             // Upload logo baru
-            $path = 'img-logo/';
-            $file = $request->file('logo');
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-            $logo = $file->storeAs($path, $fileName, 'public');
+            $fileName = uniqid() . '.' . $request->file('logo')->getClientOriginalExtension();
+            $logoPath = 'img-logo/' . $fileName;
+
+            // Simpan file
+            $request->file('logo')->storeAs('img-logo', $fileName, 'public');
+            $logo = $logoPath; // Simpan path lengkap
         } else {
             $logo = $situs->logo;
         }
