@@ -2,132 +2,111 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Berita;
 use App\Models\Gallery;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class AdminGalleryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view('admin.gallery.index', [
-            'gallerys'  => Gallery::all()
+            'gallerys' => Gallery::all()
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.gallery.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'gambar'       => 'required|mimes:png,jpg,jpeg',
-            'keterangan'   => 'required'
+        $request->validate([
+            'gambar' => 'required|image|mimes:png,jpg,jpeg|max:2048',
+            'keterangan' => 'required'
         ], [
-            'gambar.required'       => 'Form wajib di isi !',
-            'gambar.mimes'          => 'Format yang di izinkan png,jpg,jpeg !',
-            'keterangan.required'   => 'Form wajib di,'
+            'gambar.required' => 'Form wajib di isi !',
+            'gambar.image' => 'File harus berupa gambar !',
+            'gambar.mimes' => 'Format yang di izinkan png,jpg,jpeg !',
+            'keterangan.required' => 'Keterangan wajib diisi !'
         ]);
 
+        // Upload gambar
         if ($request->hasFile('gambar')) {
-            $path       = 'img-gallery/';
-            $file       = $request->file('gambar');
-            $extension  = $file->getClientOriginalExtension();
-            $fileName   = uniqid() . '.' . $extension;
-            $gambar     = $file->storeAs($path, $fileName, 'public');
+            $path = 'img-gallery/';
+            $file = $request->file('gambar');
+            $extension = $file->getClientOriginalExtension();
+            $fileName = uniqid() . '.' . $extension;
+            $gambar = $file->storeAs($path, $fileName, 'public');
         } else {
-            $gambar     = null;
-        }
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            $gambar = null;
         }
 
         Gallery::create([
-            'gambar'       => $gambar,
-            'keterangan'   => $request->keterangan,
-            'user_id'      => auth()->user()->id,
+            'gambar' => $gambar,
+            'keterangan' => $request->keterangan,
+            'user_id' => auth()->user()->id,
         ]);
 
-        return redirect('/admin/gallery')->with('success', 'Berhasil menambahkan informasi layanan baru');
+        return redirect('/admin/gallery')->with('success', 'Berhasil menambahkan gallery baru');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $gallery = Gallery::find($id);
-        return view('admin.gallery.edit', [
-            'gallery'   => $gallery,
-        ]);
+        $gallery = Gallery::findOrFail($id);
+        return view('admin.gallery.edit', compact('gallery'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $gallery = Gallery::find($id);
-        $validator = Validator::make($request->all(), [
-            'keterangan'   => 'required'
+        $gallery = Gallery::findOrFail($id);
+
+        $request->validate([
+            'gambar' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'keterangan' => 'required'
         ], [
-            'keterangan.required'   => 'Form wajib di,'
+            'gambar.image' => 'File harus berupa gambar !',
+            'gambar.mimes' => 'Format yang di izinkan png,jpg,jpeg !',
+            'keterangan.required' => 'Keterangan wajib diisi !'
         ]);
 
+        // Handle gambar upload
         if ($request->hasFile('gambar')) {
+            // Hapus gambar lama
             if ($gallery->gambar) {
-                unlink('.' . Storage::url($gallery->gambar));
+                Storage::disk('public')->delete($gallery->gambar);
             }
-            $path       = 'img-gallery/';
-            $file       = $request->file('gambar');
-            $extension  = $file->getClientOriginalExtension();
-            $fileName   = uniqid() . '.' . $extension;
-            $gambar     = $file->storeAs($path, $fileName, 'public');
+
+            // Upload gambar baru
+            $path = 'img-gallery/';
+            $file = $request->file('gambar');
+            $extension = $file->getClientOriginalExtension();
+            $fileName = uniqid() . '.' . $extension;
+            $gambar = $file->storeAs($path, $fileName, 'public');
         } else {
-            $validator = Validator::make($request->all(), [
-                'gambar'       => 'mimes:png,jpg,jpeg',
-                'keterangan'   => 'required'
-            ], [
-                'gambar.mimes'          => 'Format yang di izinkan png,jpg,jpeg !',
-                'keterangan.required'   => 'Form wajib di,'
-            ]);
             $gambar = $gallery->gambar;
         }
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
+        // Update data
         $gallery->update([
-            'gambar'        => $gambar,
-            'keterangan'    => $request->keterangan
+            'gambar' => $gambar,
+            'keterangan' => $request->keterangan
         ]);
 
         return redirect('/admin/gallery')->with('success', 'Berhasil memperbarui data gallery');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $gallery = Gallery::find($id);
-        unlink('.' . Storage::url($gallery->gambar));
+        $gallery = Gallery::findOrFail($id);
+
+        // Hapus gambar
+        if ($gallery->gambar) {
+            Storage::disk('public')->delete($gallery->gambar);
+        }
+
+        // Hapus data
         $gallery->delete();
 
         return redirect()->back()->with('success', 'Berhasil menghapus data');
