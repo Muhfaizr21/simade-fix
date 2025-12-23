@@ -23,30 +23,17 @@ class AdminGalleryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'gambar' => 'required|image|mimes:png,jpg,jpeg|max:2048',
+            'gambar' => 'required|image|max:2048',
             'keterangan' => 'required'
-        ], [
-            'gambar.required' => 'Form wajib di isi !',
-            'gambar.image' => 'File harus berupa gambar !',
-            'gambar.mimes' => 'Format yang di izinkan png,jpg,jpeg !',
-            'keterangan.required' => 'Keterangan wajib diisi !'
         ]);
 
         // Upload gambar
-        if ($request->hasFile('gambar')) {
-            $path = 'img-gallery/';
-            $file = $request->file('gambar');
-            $extension = $file->getClientOriginalExtension();
-            $fileName = uniqid() . '.' . $extension;
-            $gambar = $file->storeAs($path, $fileName, 'public');
-        } else {
-            $gambar = null;
-        }
+        $gambar = $request->file('gambar')->store('img-gallery', 'public');
 
         Gallery::create([
             'gambar' => $gambar,
             'keterangan' => $request->keterangan,
-            'user_id' => auth()->user()->id,
+            'user_id' => auth()->id(),
         ]);
 
         return redirect('/admin/gallery')->with('success', 'Berhasil menambahkan gallery baru');
@@ -63,36 +50,25 @@ class AdminGalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
 
         $request->validate([
-            'gambar' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'gambar' => 'nullable|image|max:2048',
             'keterangan' => 'required'
-        ], [
-            'gambar.image' => 'File harus berupa gambar !',
-            'gambar.mimes' => 'Format yang di izinkan png,jpg,jpeg !',
-            'keterangan.required' => 'Keterangan wajib diisi !'
         ]);
 
         // Handle gambar upload
         if ($request->hasFile('gambar')) {
-            // Hapus gambar lama
-            if ($gallery->gambar) {
-                Storage::disk('public')->delete($gallery->gambar);
-            }
+            // Hapus gambar lama dengan multiple try
+            $this->safeDelete($gallery->gambar);
 
             // Upload gambar baru
-            $path = 'img-gallery/';
-            $file = $request->file('gambar');
-            $extension = $file->getClientOriginalExtension();
-            $fileName = uniqid() . '.' . $extension;
-            $gambar = $file->storeAs($path, $fileName, 'public');
+            $gambar = $request->file('gambar')->store('img-gallery', 'public');
         } else {
             $gambar = $gallery->gambar;
         }
 
         // Update data
-        $gallery->update([
-            'gambar' => $gambar,
-            'keterangan' => $request->keterangan
-        ]);
+        $gallery->gambar = $gambar;
+        $gallery->keterangan = $request->keterangan;
+        $gallery->save();
 
         return redirect('/admin/gallery')->with('success', 'Berhasil memperbarui data gallery');
     }
@@ -102,13 +78,36 @@ class AdminGalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
 
         // Hapus gambar
-        if ($gallery->gambar) {
-            Storage::disk('public')->delete($gallery->gambar);
-        }
+        $this->safeDelete($gallery->gambar);
 
         // Hapus data
         $gallery->delete();
 
         return redirect()->back()->with('success', 'Berhasil menghapus data');
+    }
+
+    /**
+     * Safe delete file
+     */
+    private function safeDelete($filePath)
+    {
+        if (!$filePath) return;
+
+        // Coba dengan storage facade
+        try {
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+        } catch (\Exception $e) {
+            // Coba dengan unlink
+            try {
+                $fullPath = storage_path('app/public/' . $filePath);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
+            } catch (\Exception $e) {
+                // Skip error jika file tidak ditemukan
+            }
+        }
     }
 }
