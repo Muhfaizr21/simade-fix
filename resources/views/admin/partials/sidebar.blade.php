@@ -4,14 +4,26 @@
         /* SIDEBAR STYLES */
         /* ------------------------------------------------------------------- */
 
-        /* Sidebar Styling */
+        /* Sidebar Container */
         .left-sidebar {
             background: #ffffff;
             border-right: 1px solid #e2e8f0;
-            /* Pastikan lebar dan posisi sidebar sudah didefinisikan di layout utama Anda */
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            z-index: 1000;
+            overflow-y: auto;
         }
 
-        /* Navigasi Utama */
+        /* Scrollbar */
+        .scroll-sidebar {
+            height: calc(100vh - 20px);
+            padding-bottom: 20px;
+        }
+
+        /* Navigasi */
         .sidebar-nav {
             padding: 15px 0;
         }
@@ -19,80 +31,92 @@
         .sidebar-nav ul {
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 0 0 20px 0;
         }
 
-        /* Label Section */
+        /* Section Label */
         .nav-small-cap {
             margin: 25px 20px 10px;
-            font-weight: 700;
-            color: #94a3b8;
+            font-weight: 600;
+            color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             font-size: 11px;
-            padding-left: 0;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .nav-small-cap i {
-            font-size: 16px;
+            font-size: 14px;
             color: #94a3b8;
         }
 
-        /* Link Item */
+        /* Menu Items */
         .sidebar-item {
-            margin: 0 15px 6px;
+            margin: 0 10px 5px;
         }
 
         .sidebar-link {
-            border-radius: 12px;
-            padding: 12px 16px;
+            border-radius: 8px;
+            padding: 10px 15px;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 12px;
             text-decoration: none;
-            color: #475569; /* Teks abu-abu default */
+            color: #475569;
             font-weight: 500;
-            position: relative;
+            font-size: 14px;
         }
 
         .sidebar-link span i {
-            font-size: 20px;
-            color: #475569; /* Ikon abu-abu default */
-            transition: color 0.2s;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+            color: #64748b;
         }
 
-        /* Link Hover State */
-        .sidebar-link:not(.active):hover {
-            background: #eff6ff;
-            color: var(--primary);
-            box-shadow: var(--shadow-lifted);
+        /* Hover State */
+        .sidebar-link:hover {
+            background: #f1f5f9;
+            color: #1e40af;
         }
 
-        .sidebar-link:not(.active):hover span i {
-            color: var(--primary);
+        .sidebar-link:hover span i {
+            color: #1e40af;
         }
 
-        /* Link ACTIVE State */
+        /* Active State */
         .sidebar-link.active {
-            background: var(--primary);
+            background: #1e40af;
             color: white !important;
-            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
         }
 
-        .sidebar-link.active span,
         .sidebar-link.active span i {
             color: white !important;
         }
 
+        /* Dropdown */
+        .has-arrow {
+            position: relative;
+        }
 
-        /* Dropdown/Sub-Menu Styling */
+        .has-arrow::after {
+            content: '\f282';
+            font-family: "bootstrap-icons";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+
+        /* Submenu */
         .first-level {
             padding-left: 20px !important;
-            margin-top: 5px !important;
+            margin-top: 5px;
         }
 
         .first-level .sidebar-item {
@@ -101,269 +125,256 @@
 
         .first-level .sidebar-link {
             padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             background: transparent;
-            gap: 8px;
         }
 
         .first-level .sidebar-link span i {
-            font-size: 14px;
-            color: #475569;
+            font-size: 12px;
         }
 
-        /* Dropdown Link Hover */
-        .first-level .sidebar-link:hover {
-            background: rgba(30, 64, 175, 0.1);
-            color: var(--primary);
-            border-left: 3px solid var(--primary);
-            transform: none;
-            box-shadow: none;
-        }
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .left-sidebar {
+                width: 70px;
+                overflow: visible;
+            }
 
-        .first-level .sidebar-link:hover span i {
-            color: var(--primary);
-        }
+            .left-sidebar:hover {
+                width: 260px;
+            }
 
-        /* Dropdown Collapse/Expand */
-        .collapse {
-            transition: all 0.3s ease-in-out;
-        }
+            .hide-menu {
+                display: none;
+            }
 
-        /* Scrollbar Styling */
-        .scroll-sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .scroll-sidebar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        .scroll-sidebar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .scroll-sidebar::-webkit-scrollbar-thumb:hover {
-            background: #a3a3a3;
+            .left-sidebar:hover .hide-menu {
+                display: inline;
+            }
+
+            .nav-small-cap {
+                display: none;
+            }
+
+            .left-sidebar:hover .nav-small-cap {
+                display: flex;
+            }
+
+            .has-arrow::after {
+                display: none;
+            }
+
+            .left-sidebar:hover .has-arrow::after {
+                display: block;
+            }
         }
     </style>
 
-    <div>
-        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
-            <ul id="sidebarnav" class="mb-0">
+    <div class="scroll-sidebar">
+        <nav class="sidebar-nav">
+            <!-- Dashboard -->
+            <ul>
                 <li class="nav-small-cap">
-                    <i class="ti ti-home"></i>
+                    <i class="bi bi-house"></i>
                     <span class="hide-menu">Beranda</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link active" href="/dashboard" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-layout-dashboard"></i>
-                        </span>
+                    <a class="sidebar-link active" href="/dashboard">
+                        <span><i class="bi bi-speedometer2"></i></span>
                         <span class="hide-menu">Dashboard</span>
                     </a>
                 </li>
             </ul>
 
-            <ul id="sidebarnav">
+            <!-- Tampilan Website -->
+            <ul>
                 <li class="nav-small-cap">
-                    <i class="ti ti-palette"></i>
+                    <i class="bi bi-palette"></i>
                     <span class="hide-menu">Tampilan Website</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/admin/slider" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-photo-minus"></i>
-                        </span>
+                    <a class="sidebar-link" href="/admin/slider">
+                        <span><i class="bi bi-images"></i></span>
                         <span class="hide-menu">Slider</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/admin/video-profile" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-brand-youtube"></i>
-                        </span>
+                    <a class="sidebar-link" href="/admin/video-profile">
+                        <span><i class="bi bi-youtube"></i></span>
                         <span class="hide-menu">Video Profile</span>
                     </a>
                 </li>
             </ul>
 
-            <ul id="sidebarnav">
+            <!-- Konten & Publikasi -->
+            <ul>
                 <li class="nav-small-cap">
-                    <i class="ti ti-news"></i>
+                    <i class="bi bi-newspaper"></i>
                     <span class="hide-menu">Konten & Publikasi</span>
                 </li>
 
+                <!-- Profil Desa -->
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-world-upload"></i>
-                        </span>
+                    <a class="sidebar-link has-arrow" href="#">
+                        <span><i class="bi bi-globe"></i></span>
                         <span class="hide-menu">Profil Desa</span>
                     </a>
-                    <ul aria-expanded="false" class="collapse first-level">
+                    <ul class="first-level collapse">
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/wilayah" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/wilayah">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Wilayah</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/admin/sejarah" class="sidebar-link">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/sejarah">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Sejarah</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/admin/visi-misi" class="sidebar-link">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/visi-misi">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Visi & Misi</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/admin/perangkat-desa" class="sidebar-link">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/perangkat-desa">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Perangkat Desa</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/admin/peta-desa" class="sidebar-link">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/peta-desa">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Peta Desa</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
+                <!-- Berita -->
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-edit"></i>
-                        </span>
+                    <a class="sidebar-link has-arrow" href="#">
+                        <span><i class="bi bi-file-text"></i></span>
                         <span class="hide-menu">Berita</span>
                     </a>
-                    <ul aria-expanded="false" class="collapse first-level">
+                    <ul class="first-level collapse">
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/berita" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/berita">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Daftar Berita</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/komentar" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/komentar">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Komentar</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/admin/kategori" class="sidebar-link">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
+                            <a class="sidebar-link" href="/admin/kategori">
+                                <span><i class="bi bi-circle"></i></span>
                                 <span class="hide-menu">Kategori</span>
                             </a>
                         </li>
                     </ul>
                 </li>
+            </ul>
 
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-chart-bar"></i>
-                        </span>
-                        <span class="hide-menu">Data Kependudukan</span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/agama" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">Agama</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/jenis-kelamin" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">Jenis Kelamin</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/admin/pekerjaan" class="sidebar-link">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">Pekerjaan</span>
-                            </a>
-                        </li>
-                    </ul>
+            <!-- Informasi & Layanan -->
+            <ul>
+                <li class="nav-small-cap">
+                    <i class="bi bi-info-circle"></i>
+                    <span class="hide-menu">Informasi & Layanan</span>
                 </li>
 
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-info-circle"></i>
-                        </span>
-                        <span class="hide-menu">Informasi & Layanan</span>
+                    <a class="sidebar-link" href="/admin/umkm">
+                        <span><i class="bi bi-shop"></i></span>
+                        <span class="hide-menu">UMKM Desa</span>
                     </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/umkm" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">UMKM Desa</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/layanan" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">Layanan</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/gallery" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">Gallery</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/pengumuman" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">Pengumuman</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="/admin/apbdes" aria-expanded="false">
-                                <span class="d-flex"><i class="ti ti-point"></i></span>
-                                <span class="hide-menu">APBDes</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/admin/kontak" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-mail-forward"></i>
-                        </span>
+                    <a class="sidebar-link" href="/admin/layanan">
+                        <span><i class="bi bi-gear"></i></span>
+                        <span class="hide-menu">Layanan</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/gallery">
+                        <span><i class="bi bi-camera"></i></span>
+                        <span class="hide-menu">Gallery</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/pengumuman">
+                        <span><i class="bi bi-megaphone"></i></span>
+                        <span class="hide-menu">Pengumuman</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/apbdes">
+                        <span><i class="bi bi-cash-stack"></i></span>
+                        <span class="hide-menu">APBDes</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/kontak">
+                        <span><i class="bi bi-envelope"></i></span>
                         <span class="hide-menu">Kontak</span>
                     </a>
                 </li>
             </ul>
 
-            <ul id="sidebarnav" class="pb-5">
+            <!-- Sistem -->
+            <ul>
                 <li class="nav-small-cap">
-                    <i class="ti ti-settings"></i>
+                    <i class="bi bi-gear"></i>
                     <span class="hide-menu">Sistem</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/admin/identitas-situs" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-brand-laravel"></i>
-                        </span>
+                    <a class="sidebar-link" href="/admin/identitas-situs">
+                        <span><i class="bi bi-globe2"></i></span>
                         <span class="hide-menu">Identitas Situs</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/admin/profil" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-user"></i>
-                        </span>
+                    <a class="sidebar-link" href="/admin/profil">
+                        <span><i class="bi bi-person"></i></span>
                         <span class="hide-menu">Profil Akun</span>
                     </a>
                 </li>
             </ul>
         </nav>
-        </div>
-    </aside>
+    </div>
+</aside>
+
+<script>
+// Dropdown Toggle
+document.querySelectorAll('.sidebar-link.has-arrow').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const submenu = this.nextElementSibling;
+        submenu.classList.toggle('show');
+
+        // Rotate arrow
+        const arrow = this.querySelector('.bi-chevron-down');
+        if (arrow) {
+            arrow.classList.toggle('rotate-180');
+        }
+    });
+});
+
+// Mobile sidebar toggle
+const sidebar = document.querySelector('.left-sidebar');
+if (window.innerWidth <= 768) {
+    sidebar.addEventListener('mouseenter', function() {
+        this.classList.add('expanded');
+    });
+
+    sidebar.addEventListener('mouseleave', function() {
+        this.classList.remove('expanded');
+    });
+}
+</script>
